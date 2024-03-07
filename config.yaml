@@ -19,5 +19,5 @@ config:
   api_key: 
   api_secret: 
   env: mainnet
-  signing_key: ''
+  signing_key_private: ''
   wallet_address: ''
