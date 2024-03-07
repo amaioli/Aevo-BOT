@@ -68,51 +68,6 @@ async def main():
                         logger.info(f'take TP {i["asset"]}')
 
                         await create_grid(asset=i["asset"], market_price=i["mark_price"])
-
-
-                        # # old orders cancellation
-                        # aevo.rest_cancel_all_orders("PERPETUAL", i["asset"])
-
-                        # config["coins"][i["asset"]]["positions"] = 0
-
-                        # # construct the grid
-                        # is_buy = True if config["coins"][i["asset"]]["side"] == "LONG" else False
-                        # first_grid_step = config["coins"][i["asset"]]["first_grid_step"]
-                        # p_1 = float(i["mark_price"]) * (1 - first_grid_step/100) if config["coins"][i["asset"]]["side"] == "LONG" else float(i["mark_price"]) * (1 + first_grid_step/100)
-                        # p_2 = float(i["mark_price"])
-                        # s_1 = round(config["coins"][i["asset"]]["size"],config["coins"][i["asset"]]["size_precision"])
-                        # await aevo.create_order(
-                        #         instrument_id = int(i["instrument_id"]), 
-                        #         is_buy = is_buy, 
-                        #         limit_price = p_1, 
-                        #         quantity = s_1,
-                        #         post_only = False)
-
-                        # for n in range(1, config["coins"][i["asset"]]["grids"]):
-                        #     # create grid orders
-                        #     p_n = p_1 - (p_2 - p_1) * config["coins"][i["asset"]]["grid_step"] if config["coins"][i["asset"]]["side"] == "LONG" else p_1 + (p_1 - p_2) * config["coins"][i["asset"]]["grid_step"]
-                        #     price = round(p_n, config["coins"][i["asset"]]["price_precision"])
-                        #     s_n = round(s_1 * (config["coins"][i["asset"]]["order_step"]),config["coins"][i["asset"]]["size_precision"])
-                        #     await aevo.create_order(
-                        #         instrument_id = int(i["instrument_id"]), 
-                        #         is_buy = is_buy, 
-                        #         limit_price = price, 
-                        #         quantity = s_n,
-                        #         post_only = False)
-                        #     p_2 = p_1
-                        #     p_1 = p_n
-                        #     s_1 = s_n
-
-                        # # create market order
-                        # price = round(float(i["mark_price"]) * 1.05, config["coins"][i["asset"]]["price_precision"]) if is_buy else  0
-                        # await aevo.create_order(
-                        #     instrument_id = int(i["instrument_id"]), 
-                        #     is_buy = is_buy, 
-                        #     limit_price = price, 
-                        #     quantity = round(config["coins"][i["asset"]]["size"], config["coins"][i["asset"]]["size_precision"]),
-                        #     post_only = False
-                        #     )
-                        # await asyncio.sleep(0.5)
                         
                     else:
                         if float(i["amount"]) > config["coins"][i["asset"]]["positions"]:
@@ -144,9 +99,6 @@ async def create_grid(asset, market_price):
     aevo.rest_cancel_all_orders("PERPETUAL", asset=asset)
 
     config["coins"][asset]["positions"] = 0
-
-    print("Create grid of ", asset)
-    print("at price ", market_price)
 
     # construct the grid
     instrument_id = int(config["coins"][asset]["instrument_id"])
