@@ -1,0 +1,23 @@
+coins:
+  DYM:
+    first_grid_step: 0.5
+    grid_step: 1.5
+    grids: 4
+    order_step: 1.5
+    side: LONG
+    size: 10
+    take_step: 0.003
+  INJ:
+    first_grid_step: 0.5
+    grid_step: 1.5
+    grids: 3
+    order_step: 1.5
+    side: LONG
+    size: 1
+    take_step: 0.003
+config:
+  api_key: 
+  api_secret: 
+  env: mainnet
+  signing_key: ''
+  wallet_address: ''
