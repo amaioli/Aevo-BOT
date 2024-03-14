@@ -91,7 +91,7 @@ async def main():
                                 limit_price=price,
                                 post_only=False, 
                                 quantity=round(float(i["amount"]),config["coins"][i["asset"]]["size_precision"]))
-                            
+                            logger.info(f'Created TP order with id: {config["coins"][i["asset"]]["tp_order"]}')
                             config["coins"][i["asset"]]["positions"] = round(float(i["amount"]),config["coins"][i["asset"]]["size_precision"])
                             
 
