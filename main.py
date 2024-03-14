@@ -85,6 +85,7 @@ async def main():
                                 price = round(float(i["avg_entry_price"]) * (1 - config["coins"][i["asset"]]["take_step"]/100), config["coins"][i["asset"]]["price_precision"])
 
                             # new TP execution
+                            await asyncio.sleep(0.5)
                             config["coins"][i["asset"]]["tp_order"] = await aevo.create_order(
                                 instrument_id=i["instrument_id"], 
                                 is_buy=is_buy, 
