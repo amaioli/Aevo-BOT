@@ -5,6 +5,7 @@ import time
 import traceback
 import logging as logger
 from eth_account.messages import encode_structured_data
+from http import HTTPStatus
 
 import requests
 import websockets
@@ -326,10 +327,11 @@ class AevoClient:
         req = self.client.post(
             f"{self.rest_url}/orders", json=data, headers=self.rest_headers
         )
-        try:
-            return req.json()
-        except:
-            return req.text()
+        if req.status_code == HTTPStatus.OK:
+            return order_id
+        else:
+            error = req.text
+            logger.error(f'Problem with order creation: {error}')
 
     def rest_create_market_order(self, instrument_id, is_buy, quantity):
         limit_price = 0
