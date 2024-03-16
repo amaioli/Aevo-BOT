@@ -86,7 +86,7 @@ async def main():
 
                             # new TP execution
                             await asyncio.sleep(0.5)
-                            config["coins"][i["asset"]]["tp_order"] = await aevo.create_order(
+                            config["coins"][i["asset"]]["tp_order"] = aevo.rest_create_order(
                                 instrument_id=i["instrument_id"], 
                                 is_buy=is_buy, 
                                 limit_price=price,
@@ -106,9 +106,11 @@ async def create_grid(asset, market_price):
     is_buy = True if config["coins"][asset]["side"] == "LONG" else False
     first_grid_step = config["coins"][asset]["first_grid_step"]
     p_1 = float(market_price) * (1 - first_grid_step/100) if config["coins"][asset]["side"] == "LONG" else float(market_price) * (1 + first_grid_step/100)
+    p_1 = round(p_1, config["coins"][asset]["price_precision"])
     p_2 = float(market_price)
+    p_2 = round(p_2, config["coins"][asset]["price_precision"])
     s_1 = round(config["coins"][asset]["size"],config["coins"][asset]["size_precision"])
-    await aevo.create_order(
+    aevo.rest_create_order(
             instrument_id = instrument_id, 
             is_buy = is_buy, 
             limit_price = p_1, 
@@ -120,7 +122,7 @@ async def create_grid(asset, market_price):
         p_n = p_1 - (p_2 - p_1) * config["coins"][asset]["grid_step"] if config["coins"][asset]["side"] == "LONG" else p_1 + (p_1 - p_2) * config["coins"][asset]["grid_step"]
         price = round(p_n, config["coins"][asset]["price_precision"])
         s_n = round(s_1 * (config["coins"][asset]["order_step"]),config["coins"][asset]["size_precision"])
-        await aevo.create_order(
+        aevo.rest_create_order(
             instrument_id = instrument_id, 
             is_buy = is_buy, 
             limit_price = price, 
@@ -132,7 +134,7 @@ async def create_grid(asset, market_price):
 
     # create market order
     price = round(float(market_price) * 1.05, config["coins"][asset]["price_precision"]) if is_buy else  0
-    await aevo.create_order(
+    aevo.rest_create_order(
         instrument_id = instrument_id, 
         is_buy = is_buy, 
         limit_price = price, 
