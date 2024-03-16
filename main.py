@@ -1,8 +1,9 @@
-import asyncio, json, yaml, time, os
+import asyncio, json, yaml, time, os, sys
 
 import logging as logger
 
 from aevo import AevoClient
+
 
 logger.basicConfig(
         level=os.getenv("LOGGING_LEVEL", "INFO"),
@@ -101,7 +102,6 @@ async def create_grid(asset, market_price):
 
     config["coins"][asset]["positions"] = 0
 
-    # construct the grid
     instrument_id = int(config["coins"][asset]["instrument_id"])
     is_buy = True if config["coins"][asset]["side"] == "LONG" else False
     first_grid_step = config["coins"][asset]["first_grid_step"]
@@ -117,8 +117,9 @@ async def create_grid(asset, market_price):
             quantity = s_1,
             post_only = False)
 
+    # create grid orders
     for n in range(1, config["coins"][asset]["grids"]):
-        # create grid orders
+        
         p_n = p_1 - (p_2 - p_1) * config["coins"][asset]["grid_step"] if config["coins"][asset]["side"] == "LONG" else p_1 + (p_1 - p_2) * config["coins"][asset]["grid_step"]
         price = round(p_n, config["coins"][asset]["price_precision"])
         s_n = round(s_1 * (config["coins"][asset]["order_step"]),config["coins"][asset]["size_precision"])
@@ -149,4 +150,8 @@ async def init():
     await aevo.subscribe_positions()
 
 if __name__ == "__main__":
+    # Python version checking
+    if sys.version_info[0] < 3 and sys.version_info[1] < 9 and sys.version_info[2] < 18:
+        logger.debug('Python version should be at least 3.1.18')
+        exit()
     asyncio.run(main())
