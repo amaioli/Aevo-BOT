@@ -1,4 +1,4 @@
-import asyncio, json, yaml, time, os, sys
+import asyncio, json, yaml, os, sys
 
 import logging as logger
 
@@ -86,7 +86,6 @@ async def main():
                                 price = round(float(i["avg_entry_price"]) * (1 - config["coins"][i["asset"]]["take_step"]/100), config["coins"][i["asset"]]["price_precision"])
 
                             # new TP execution
-                            await asyncio.sleep(0.5)
                             config["coins"][i["asset"]]["tp_order"] = aevo.rest_create_order(
                                 instrument_id=i["instrument_id"], 
                                 is_buy=is_buy, 
@@ -142,7 +141,6 @@ async def create_grid(asset, market_price):
         quantity = round(config["coins"][asset]["size"], config["coins"][asset]["size_precision"]),
         post_only = False
         )
-    await asyncio.sleep(0.5)
 
 async def init():
     await aevo.open_connection()
