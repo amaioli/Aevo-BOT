@@ -346,17 +346,25 @@ class AevoClient:
             decimals=1,
             post_only=False,
         )
-
+        logger.info(data)
         req = self.client.post(
             f"{self.rest_url}/orders", json=data, headers=self.rest_headers
         )
-        return req.json()
+        if req.status_code == HTTPStatus.OK:
+                return order_id
+        else:
+            error = req.text
+            logger.error(f'Problem with order creation: {error}')
 
     def rest_cancel_order(self, order_id):
         req = self.client.delete(
             f"{self.rest_url}/orders/{order_id}", headers=self.rest_headers
         )
         logger.info(req.json())
+        return req.json()
+
+    def rest_get_cancel_on_disconnect(self):
+        req = self.client.get(f"{self.rest_url}/account/cancel-on-disconnect", headers=self.rest_headers)
         return req.json()
 
     def rest_get_account(self):

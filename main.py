@@ -1,8 +1,9 @@
-import asyncio, json, yaml, time, os
+import asyncio, json, yaml, os, sys
 
 import logging as logger
 
 from aevo import AevoClient
+
 
 logger.basicConfig(
         level=os.getenv("LOGGING_LEVEL", "INFO"),
@@ -52,7 +53,8 @@ async def main():
             config["coins"][i]["tp_order"] = ""
             config["coins"][i]["positions"] = 0
 
-            await create_grid(asset=i, market_price=coin[0]["mark_price"])
+            if len(sys.argv) > 3 and sys.argv[1] == "grid_create":
+                await create_grid(asset=i, market_price=coin[0]["mark_price"])
 
 
         async for msg in aevo.read_messages(on_disconnect=init):
@@ -85,7 +87,6 @@ async def main():
                                 price = round(float(i["avg_entry_price"]) * (1 - config["coins"][i["asset"]]["take_step"]/100), config["coins"][i["asset"]]["price_precision"])
 
                             # new TP execution
-                            await asyncio.sleep(0.5)
                             config["coins"][i["asset"]]["tp_order"] = aevo.rest_create_order(
                                 instrument_id=i["instrument_id"], 
                                 is_buy=is_buy, 
@@ -101,7 +102,6 @@ async def create_grid(asset, market_price):
 
     config["coins"][asset]["positions"] = 0
 
-    # construct the grid
     instrument_id = int(config["coins"][asset]["instrument_id"])
     is_buy = True if config["coins"][asset]["side"] == "LONG" else False
     first_grid_step = config["coins"][asset]["first_grid_step"]
@@ -117,8 +117,9 @@ async def create_grid(asset, market_price):
             quantity = s_1,
             post_only = False)
 
+    # create grid orders
     for n in range(1, config["coins"][asset]["grids"]):
-        # create grid orders
+        
         p_n = p_1 - (p_2 - p_1) * config["coins"][asset]["grid_step"] if config["coins"][asset]["side"] == "LONG" else p_1 + (p_1 - p_2) * config["coins"][asset]["grid_step"]
         price = round(p_n, config["coins"][asset]["price_precision"])
         s_n = round(s_1 * (config["coins"][asset]["order_step"]),config["coins"][asset]["size_precision"])
@@ -141,12 +142,16 @@ async def create_grid(asset, market_price):
         quantity = round(config["coins"][asset]["size"], config["coins"][asset]["size_precision"]),
         post_only = False
         )
-    await asyncio.sleep(0.5)
 
 async def init():
     await aevo.open_connection()
     logger.info("Positions subscribing ...")
-    await aevo.subscribe_positions()
+    #await aevo.subscribe_positions()
+    print(aevo.rest_get_cancel_on_disconnect())
 
 if __name__ == "__main__":
+    # Python version checking
+    if sys.version_info[0] < 3 and sys.version_info[1] < 9 and sys.version_info[2] < 18:
+        logger.debug('Python version should be at least 3.1.18')
+        exit()
     asyncio.run(main())
