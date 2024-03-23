@@ -35,11 +35,20 @@ with open('config.yaml', 'w') as file:
     config["config"]["api_secret"] = aevo.api_secret
     yaml.dump(config, file)
 
+async def refresh_config_loop():
+    global config
+    while True:
+        with open('config.yaml', 'r') as file:
+            config = yaml.safe_load(file)
+            await asyncio.sleep(10)
+
 
 
 async def main():
         
         await init()
+
+        #await refresh_config_loop()
         
         for i in config["coins"]:
             aevo.rest_cancel_all_orders("PERPETUAL", i)
@@ -146,8 +155,7 @@ async def create_grid(asset, market_price):
 async def init():
     await aevo.open_connection()
     logger.info("Positions subscribing ...")
-    #await aevo.subscribe_positions()
-    print(aevo.rest_get_cancel_on_disconnect())
+    await aevo.subscribe_positions()
 
 if __name__ == "__main__":
     # Python version checking
