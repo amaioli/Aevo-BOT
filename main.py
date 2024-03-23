@@ -53,7 +53,8 @@ async def main():
             config["coins"][i]["tp_order"] = ""
             config["coins"][i]["positions"] = 0
 
-            await create_grid(asset=i, market_price=coin[0]["mark_price"])
+            if len(sys.argv) > 3 and sys.argv[1] == "grid_create":
+                await create_grid(asset=i, market_price=coin[0]["mark_price"])
 
 
         async for msg in aevo.read_messages(on_disconnect=init):
@@ -145,7 +146,8 @@ async def create_grid(asset, market_price):
 async def init():
     await aevo.open_connection()
     logger.info("Positions subscribing ...")
-    await aevo.subscribe_positions()
+    #await aevo.subscribe_positions()
+    print(aevo.rest_get_cancel_on_disconnect())
 
 if __name__ == "__main__":
     # Python version checking
