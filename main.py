@@ -62,8 +62,8 @@ async def main():
             config["coins"][i]["tp_order"] = ""
             config["coins"][i]["positions"] = 0
 
-            if len(sys.argv) > 3 and sys.argv[1] == "grid_create":
-                await create_grid(asset=i, market_price=coin[0]["mark_price"])
+            # if len(sys.argv) > 3 and sys.argv[1] == "grid_create":
+            await create_grid(asset=i, market_price=coin[0]["mark_price"])
 
 
         async for msg in aevo.read_messages(on_disconnect=init):
