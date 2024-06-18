@@ -82,7 +82,7 @@ async def main():
                         await create_grid(asset=i["asset"], market_price=i["mark_price"])
                         
                     else:
-                        if (float(i["amount"]) - config["coins"][i["asset"]]["positions"]) * float(i["mark_price"]) > float(config["coins"][i]["min_order_value"]):
+                        if (float(i["amount"]) - config["coins"][i["asset"]]["positions"]) * float(i["mark_price"]) > float(config["coins"][i["asset"]]["min_order_value"]):
                             logger.info(f'Filled grid order on {i["asset"]}')
                             # rebuid the TP
                             if config["coins"][i["asset"]]["tp_order"]:
