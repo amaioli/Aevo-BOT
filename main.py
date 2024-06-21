@@ -1,4 +1,4 @@
-import asyncio, json, yaml, os, sys
+import asyncio, json, yaml, os, sys, time
 
 import logging as logger
 
@@ -154,6 +154,7 @@ async def create_grid(asset, market_price):
         )
 
 async def init():
+    time.sleep(5)
     await aevo.open_connection()
     logger.info("Positions subscribing ...")
     await aevo.subscribe_positions()
